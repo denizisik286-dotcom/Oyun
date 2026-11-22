@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>METE CITY 3D - ULTIMATE GARAJI</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#351c4d;font-family:Arial,sans-serif;touch-action:none}canvas{display:block}
+#brand{position:fixed;left:16px;top:14px;color:#00ffcc;text-shadow:0 0 10px #00ffcc88;font-weight:900;letter-spacing:3px;font-size:22px;pointer-events:none}#subtitle{font-size:11px;letter-spacing:1px;color:#ff007f;margin-top:2px}
+#hud{position:fixed;left:14px;top:70px;display:flex;flex-direction:column;gap:6px;pointer-events:none;font-size:12px;font-weight:bold;color:#fff}
+.hud-bar{background:#00000088;border:1px solid #ffffff33;padding:6px 10px;border-radius:10px;display:flex;justify-content:space-between;width:150px}
+#speed{position:fixed;right:18px;bottom:18px;color:#00ffcc;font-weight:900;font-size:30px;text-shadow:0 0 15px #00ffcc88;pointer-events:none}
+#quality{position:fixed;left:14px;top:180px;border:1px solid #ffffff70;border-radius:12px;background:#102234b8;color:#fff;padding:8px 10px;font-size:12px}
+#map{position:fixed;right:14px;top:14px;width:138px;height:138px;border-radius:50%;border:3px solid #00ffcc;background:#10202bd9;box-shadow:0 0 20px #00ffcc55}
+#mission{position:fixed;left:50%;top:16px;transform:translateX(-50%);background:linear-gradient(135deg,#ff007f,#7928ca);color:#fff;border:1px solid #ffffff55;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:bold;white-space:nowrap;box-shadow:0 5px 15px #ff007f44}
+#garageBtn{position:fixed;left:14px;top:225px;border:1px solid #00ffcc;border-radius:12px;background:#00ffcc22;color:#00ffcc;padding:8px 14px;font-size:12px;font-weight:bold;cursor:pointer;pointer-events:auto;box-shadow:0 0 10px #00ffcc33}
+#garageBtn:hover{background:#00ffcc44}
+#garageMenu{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#111625f8;border:2px solid #00ffcc;border-radius:20px;padding:25px;display:none;flex-direction:column;align-items:center;gap:15px;z-index:100;box-shadow:0 0 30px #00ffcc55;color:#fff}
+#garageMenu h2{margin:0;color:#00ffcc;letter-spacing:2px}
+.color-list{display:flex;gap:12px}
+.color-box{width:45px;height:45px;border-radius:50%;cursor:pointer;border:3px solid #fff;box-shadow:0 0 10px #000}
+.close-garage{margin-top:10px;background:#ff0055;color:#fff;border:none;padding:10px 20px;font-weight:bold;border-radius:10px;cursor:pointer}
+#controls{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 16px;pointer-events:none}
+.group{display:flex;gap:10px;align-items:flex-end;pointer-events:auto}.pedals{flex-direction:column}
+.ctrl{width:66px;height:66px;border:1px solid #ffffffa8;border-radius:22px;background:linear-gradient(145deg,#263e50eF,#101d2beF);color:white;font-weight:900;font-size:20px;box-shadow:0 5px 16px #0006,inset 0 1px 0 #ffffff35;touch-action:none;user-select:none;-webkit-user-select:none}
+.ctrl:active,.ctrl.active{filter:brightness(1.35);transform:scale(.96)}.gas{background:linear-gradient(145deg,#00ffcc,#009977);height:72px}.brake{background:linear-gradient(145deg,#ff0055,#990033);height:62px}.steer{font-size:25px}
+#hint{position:fixed;left:50%;bottom:165px;transform:translateX(-50%);padding:8px 14px;border-radius:12px;background:#10202bc9;color:#00ffcc;font-size:12px;white-space:nowrap;pointer-events:none;border:1px solid #00ffcc44}
+@media(max-width:600px){#map{width:104px;height:104px}#brand{font-size:16px}#quality{top:170px}#garageBtn{top:225px}.ctrl{width:58px;height:58px;border-radius:19px}.gas{height:66px}.brake{height:56px}#hint{bottom:150px}}
+</style>
+</head>
+<body>
+<div id="brand">METE CITY 3D<div id="subtitle">NEON OPEN WORLD</div></div>
+<div id="hud">
+ <div class="hud-bar"><span>❤️ CAN:</span><span id="hpVal">100%</span></div>
+ <div class="hud-bar"><span>⛽ YAKIT:</span><span id="fuelVal">100%</span></div>
+ <div class="hud-bar"><span>💰 PARA:</span><span id="moneyVal">$0</span></div>
+</div>
+<select id="quality" aria-label="Grafik kalitesi"><option value="auto">Grafik: Otomatik</option><option value="low">Grafik: Düşük</option><option value="medium">Grafik: Orta</option><option value="high">Grafik: Yüksek</option></select>
+<button id="garageBtn" aria-label="Garajı Aç">🚗 GARAJ</button>
+
+<div id="garageMenu" aria-label="Garaj Menüsü">
+ <h2>ARABA GARAJI</h2>
+ <p style="font-size:13px; color:#aaa; margin:0;">Aracın için renk seç:</p>
+ <div class="color-list">
+  <div class="color-box" style="background:#ff0055;" onclick="changeCarColor(0xff0055)"></div>
+  <div class="color-box" style="background:#00ffcc;" onclick="changeCarColor(0x00ffcc)"></div>
+  <div class="color-box" style="background:#ffaa00;" onclick="changeCarColor(0xffaa00)"></div>
+  <div class="color-box" style="background:#7928ca;" onclick="changeCarColor(0x7928ca)"></div>
+  <div class="color-box" style="background:#0070f3;" onclick="changeCarColor(0x0070f3)"></div>
+ </div>
+ <button class="close-garage" onclick="toggleGarage(false)">KAPAT & DEVAM ET</button>
+</div>
+
+<canvas id="map" width="256" height="256"></canvas>
+<div id="mission">🎯 Görev: Altın Konvoyuna Yetiş!</div>
+<div id="speed">0 km/sa</div><div id="hint">Garajdan renk seç · WASD veya pedallar ile sür</div>
+<div id="controls">
+ <div class="group"><button class="ctrl steer" data-key="a" aria-label="Sola dön">◀</button><button class="ctrl steer" data-key="d" aria-label="Sağa dön">▶</button></div>
+ <div class="group pedals"><button class="ctrl gas" data-key="w">▲<br><small style="font-size:11px">GAZ</small></button><button class="ctrl brake" data-key="s">▼<br><small style="font-size:10px">FREN</small></button></div>
+</div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x111625);scene.fog=new THREE.Fog(0x111625,180,800);
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,1500);
+const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.2;document.body.appendChild(renderer.domElement);
+const qualitySelect=document.getElementById('quality');let quality='medium';
+function setQuality(q){if(q==='auto'){const mem=navigator.deviceMemory||4; q=(innerWidth<700||mem<=3)?'low':mem>=8?'high':'medium'}quality=q;const d={low:{pixel
